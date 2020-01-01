@@ -95,12 +95,12 @@ public class MqttSubscriberService {
                 
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    log.info("connect success");        
+                    log.info("connect success");
                 }
                 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    log.error("connect error" + exception.getMessage());                    
+                    log.error("connect error" + exception.getMessage());
                 }
             });
             System.out.println("to connect");

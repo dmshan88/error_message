@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -12,6 +11,7 @@ import com.example.common.PanelInfo;
 import com.example.message.PanelErrorMessage;
 import com.example.service.MessageStoreService;
 import com.example.service.MqttSubscriberService;
+import com.example.service.NotifySubjectService;
 import com.example.service.SmsService;
 
 import lombok.extern.log4j.Log4j;
@@ -20,8 +20,8 @@ import lombok.extern.log4j.Log4j;
 @Component
 public class MessageTask  implements Runnable {
     
-    @Value("${app.phone_list}")
-    private String phoneList;
+    @Autowired
+    private NotifySubjectService notifySubjectService;
     
     @Autowired
     private SmsService smsSender;
@@ -55,14 +55,14 @@ public class MessageTask  implements Runnable {
             param[2] = "..";
             param[3] = "..";
             param[4] = dateString;
-            String[] phoneNumbers = phoneList.split(",");
+//            String[] phoneNumbers = phoneList.split(",");
             if (stat.equals("off")) {
                 param[1] = "停止服务!!!";
-                smsSender.sendSms(phoneNumbers, param);
+                smsSender.sendSms(notifySubjectService.getMaintainGroup(), param);
                 log.info("dispather service off;");
             } else if (stat.equals("on")){
                 param[1] = "开始服务";
-                smsSender.sendSms(phoneNumbers, param);
+                smsSender.sendSms(notifySubjectService.getMaintainGroup(), param);
                 log.info("dispather service on;");
             } else {
                 log.info("unknown service;");
@@ -101,8 +101,11 @@ public class MessageTask  implements Runnable {
         param[2] = panelName;
         param[3] = panellot;
         param[4] = dateString;
-        String[] phoneNumbers = phoneList.split(",");
-        smsSender.sendSms(phoneNumbers, param);
+//        String[] phoneNumbers = phoneList.split(",");
+        smsSender.sendSms(notifySubjectService.getErrorMessageGroup(), param);
+        if (summary.contains("0210") || summary.contains("0211")) {
+            smsSender.sendSms(notifySubjectService.get0210Group(), param);
+        }
     }
 
 }

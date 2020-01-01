@@ -1,5 +1,7 @@
-package com.example.service;
+package com.example.service.impl;
 
+import com.example.common.NotifySubject;
+import com.example.service.SmsService;
 import com.github.qcloudsms.SmsMultiSender;
 import com.github.qcloudsms.SmsMultiSenderResult;
 import com.github.qcloudsms.httpclient.HTTPException;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Log4j
 @Service
@@ -51,5 +54,15 @@ public class TencentSmsServiceImpl implements SmsService {
           // 网络 IO 错误
             log.error(e.getMessage());
         }
+    }
+
+    @Override
+    public void sendSms(NotifySubject<String> subject, String[] params) {
+        if (subject == null || subject.getList() == null || subject.getList().isEmpty()) {
+            log.error("subject empty");
+        }
+        List<String> list = subject.getList();
+        sendSms(list.toArray(new String[list.size()]), params);
+        
     }
 }
